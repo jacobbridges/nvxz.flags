@@ -1,5 +1,8 @@
 [phases.setup]
 nixPkgs = ["python311", "gcc"]
 
+[phases.build]
+cmds = ["pip install uv", "uv sync"]
+
 [start]
 cmd = "uv run fastapi run src/api/naive.py --port=13364"
