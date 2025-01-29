@@ -1,0 +1,9 @@
+[project]
+name = "nvxz-flags"
+version = "0.1.0"
+description = "Simple feature flag server."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]>=0.115.7",
+]
