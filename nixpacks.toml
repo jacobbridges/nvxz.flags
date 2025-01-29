@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ["python311", "gcc"]
+
+[start]
+cmd = "uv run fastapi run src/api/naive.py --port=13364"
