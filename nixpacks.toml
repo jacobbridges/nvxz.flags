@@ -8,5 +8,9 @@ cmds = ["python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip in
 cmds = ["uv sync"]
 onlyIncludeFiles = ["pyproject.toml", "uv.lock"]
 
+[phases.appinit]
+cmds = ["uv pip install -e . && uv run init-db"]
+dependsOn = "build"
+
 [start]
 cmd = "uv run fastapi run src/api/main.py --port=13364"
