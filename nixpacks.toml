@@ -10,7 +10,7 @@ onlyIncludeFiles = ["pyproject.toml", "uv.lock"]
 
 [phases.appinit]
 cmds = ["uv pip install -e . && uv run init-db"]
-dependsOn = "build"
+dependsOn = ["setup", "install", "build"]
 
 [start]
 cmd = "uv run fastapi run src/api/main.py --port=13364"
