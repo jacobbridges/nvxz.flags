@@ -5,4 +5,4 @@ nixPkgs = ["python311", "gcc"]
 cmds = ["pip install uv", "uv sync"]
 
 [start]
-cmd = "uv run fastapi run src/api/naive.py --port=13364"
+cmd = "uv run fastapi run src/api/main.py --port=13364"
