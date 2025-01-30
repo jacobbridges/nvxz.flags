@@ -1,8 +1,12 @@
 [phases.setup]
 nixPkgs = ["python311", "gcc"]
 
+[phases.install]
+cmds = ["pip install uv"]
+
 [phases.build]
-cmds = ["pip install uv", "uv sync"]
+cmds = ["uv sync", "uv pip install -e ."]
+onlyIncludeFiles = ["pyproject.toml", "uv.lock"]
 
 [start]
 cmd = "uv run fastapi run src/api/main.py --port=13364"
