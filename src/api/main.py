@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 
-from .routers import flags
+from .routers import flags, users
 
 app = FastAPI()
 
 app.include_router(flags.router)
+app.include_router(users.router)
 
 
 @app.get("/")

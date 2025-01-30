@@ -1,10 +1,5 @@
 /.venv/
-.idea/git_toolbox_blame.xml
-.idea/git_toolbox_prj.xml
-.idea/inspectionProfiles/profiles_settings.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/nvxz.flags.iml
-.idea/vcs.xml
-.idea/.gitignore
+.idea/
+*.egg-info/
+*.db
 *.pyc
