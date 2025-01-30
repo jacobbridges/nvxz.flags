@@ -1,2 +1,3 @@
 # nvxz.flags
- Simple feature flag server
+
+ A tiny feature flag service.
