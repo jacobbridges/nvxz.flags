@@ -1,9 +1,11 @@
+import sqlite3
 from datetime import datetime
 
 from api.core.auth import ph
 from api.core.db import get_conn
 from api.core.settings import SESSION_AGE_LIMIT
 from api.schemas import User
+from api.exceptions import UsernameTakenError
 
 now = datetime.utcnow
 
@@ -11,8 +13,15 @@ now = datetime.utcnow
 async def create_user(username, password):
     async with get_conn() as conn:
         hashed_password = ph.hash(password)
-        await conn.execute("INSERT INTO user (username, hashed_password) VALUES (?, ?);", (username, hashed_password))
-        await conn.commit()
+        try:
+            await conn.execute(
+                "INSERT INTO user (username, hashed_password) VALUES (?, ?);",
+                (username, hashed_password),
+            )
+            await conn.commit()
+        except sqlite3.IntegrityError as e:
+            await conn.rollback()
+            raise UsernameTakenError()
 
 
 async def get_user(username) -> User | None:
