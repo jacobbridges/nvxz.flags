@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 from api import crud, schemas
 from api.core.auth import get_current_user
@@ -12,9 +13,14 @@ router = APIRouter(
 )
 
 
+class ProjectCreate(BaseModel):
+    name: str
+    domain_whitelist: list[str]
+
+
 @router.post("/")
 async def create_project(
-    data: schemas.ProjectCreate,
+    data: ProjectCreate,
     current_user: Annotated[schemas.User, Depends(get_current_user)],
 ) -> schemas.Project:
     try:

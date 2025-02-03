@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from api import crud, schemas
 from api.exceptions import UsernameTakenError
@@ -10,16 +11,29 @@ router = APIRouter(
 )
 
 
+class UserCreate(BaseModel):
+    username: str
+    password: str
+
+
+class UserDetail(BaseModel):
+    id: int
+    username: str
+
+
 @router.get("/{username}")
-async def retrieve_user(username: str) -> schemas.User:
+async def retrieve_user(username: str) -> UserDetail:
     user = await crud.get_user(username)
     if user is None:
         raise HTTPException(status_code=404, detail="Not Found")
-    return user
+    return UserDetail(
+        id=user.id,
+        username=user.username,
+    )
 
 
 @router.post("/")
-async def create_user(user: schemas.UserCreate) -> schemas.User:
+async def create_user(user: schemas.UserCreate) -> UserDetail:
     if DISABLE_USER_CREATE_ENDPOINT:
         raise HTTPException(status_code=403, detail="Disabled")
     try:
@@ -27,4 +41,7 @@ async def create_user(user: schemas.UserCreate) -> schemas.User:
     except UsernameTakenError:
         raise HTTPException(status_code=400, detail="That username is taken.")
     user = await crud.get_user(user.username)
-    return user
+    return UserDetail(
+        id=user.id,
+        username=user.username,
+    )
