@@ -1,11 +1,10 @@
-import logging
 import sqlite3
+
+from loguru import logger
 
 from api.core.db import get_conn
 from api.schemas import Project
 from api.exceptions import ProjectNameTakenError
-
-logger = logging.getLogger("nvxz")
 
 
 async def create_project(user_id: int, name: str, domain_whitelist: list[str]) -> int:
@@ -27,9 +26,9 @@ async def create_project(user_id: int, name: str, domain_whitelist: list[str]) -
             return inserted_id
         except sqlite3.IntegrityError as e:
             await conn.rollback()
-            logger.exception("Error while creating new project!")
             if "failed: project.user_id, project.name" in e.args[0]:
                 raise ProjectNameTakenError()
+            logger.exception("Error while creating new project")
             raise
 
 
