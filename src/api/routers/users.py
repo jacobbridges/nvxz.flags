@@ -33,7 +33,7 @@ async def retrieve_user(username: str) -> UserDetail:
 
 
 @router.post("/")
-async def create_user(user: schemas.UserCreate) -> UserDetail:
+async def create_user(user: UserCreate) -> UserDetail:
     if DISABLE_USER_CREATE_ENDPOINT:
         raise HTTPException(status_code=403, detail="Disabled")
     try:

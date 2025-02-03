@@ -53,31 +53,6 @@ async def build_project_table(conn):
     """)
     await conn.commit()
 
-    # Big updates to project table
-    await conn.execute("PRAGMA legacy_alter_table = 1;")
-    await conn.execute("PRAGMA foreign_keys = 0;")
-    await conn.execute("ALTER TABLE project RENAME TO old_project;")
-    await conn.execute("""
-    CREATE TABLE project (
-        id INTEGER PRIMARY KEY ASC,
-        name TEXT NOT NULL,
-        user_id INTEGER NOT NULL,
-        domain_whitelist TEXT,
-        FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
-    )
-    """)
-    await conn.execute("INSERT INTO project SELECT * from old_project;")
-    await conn.execute("DROP TABLE old_project;")
-    await conn.execute("PRAGMA legacy_alter_table = 0;")
-    await conn.execute("PRAGMA foreign_keys = 1;")
-    await conn.commit()
-
-    # Add unique index for name + user_id
-    await conn.execute("""
-        CREATE UNIQUE INDEX IF NOT EXISTS uniq_projectname ON project (user_id, name COLLATE NOCASE);
-        """)
-    await conn.commit()
-
 
 async def load_db():
     """
