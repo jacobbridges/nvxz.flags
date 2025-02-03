@@ -13,7 +13,6 @@ async def create_project(user_id: int, name: str, domain_whitelist: list[str]) -
         else ",".join(domain_whitelist)
     )
     async with get_conn() as conn:
-        await conn.execute("PRAGMA foreign_keys = ON;")
         try:
             cursor = await conn.cursor()
             await cursor.execute(
@@ -34,7 +33,6 @@ async def create_project(user_id: int, name: str, domain_whitelist: list[str]) -
 
 async def get_project(idx: int) -> Project | None:
     async with get_conn() as conn:
-        await conn.execute("PRAGMA foreign_keys = ON;")
         cursor = await conn.execute("SELECT id, name, user_id, domain_whitelist FROM project WHERE id = ?;", (idx,))
         row = await cursor.fetchone()
         await cursor.close()
@@ -50,7 +48,6 @@ async def get_project(idx: int) -> Project | None:
 
 async def list_projects_by_user(user_id: int) -> list[Project]:
     async with get_conn() as conn:
-        await conn.execute("PRAGMA foreign_keys = ON;")
         cursor = await conn.execute(
             "SELECT id, name, user_id, domain_whitelist FROM project WHERE id = ?;", (user_id,)
         )

@@ -13,3 +13,9 @@ from .projects import (
     get_project,
     list_projects_by_user,
 )
+from .flags import (
+    create_flag,
+    get_flag,
+    list_flags_by_project,
+    list_flags_by_user,
+)

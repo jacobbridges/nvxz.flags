@@ -12,3 +12,10 @@ class Project(BaseModel):
     name: str
     user_id: int
     domain_whitelist: list[str]
+
+
+class Flag(BaseModel):
+    id: int
+    name: str
+    value: bool
+    project_id: int

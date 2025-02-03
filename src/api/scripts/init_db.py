@@ -54,6 +54,27 @@ async def build_project_table(conn):
     await conn.commit()
 
 
+async def build_flag_table(conn):
+    """
+    Build/Maintain the flag table.
+    """
+    await conn.execute("""
+    CREATE TABLE IF NOT EXISTS flag (
+        id INTEGER PRIMARY KEY ASC,
+        "name" TEXT NOT NULL,
+        "value" BOOLEAN DEFAULT FALSE NOT NULL,
+        project_id INTEGER NOT NULL,
+        FOREIGN KEY(project_id) REFERENCES project(id) ON DELETE CASCADE
+    )
+    """)
+    await conn.commit()
+
+    await conn.execute("""
+    CREATE UNIQUE INDEX IF NOT EXISTS uniq_flagname ON flag (project_id, name COLLATE NOCASE);
+    """)
+    await conn.commit()
+
+
 async def load_db():
     """
     Build/Maintain the database structure.
@@ -62,6 +83,7 @@ async def load_db():
         await build_user_table(conn)
         await build_session_table(conn)
         await build_project_table(conn)
+        await build_flag_table(conn)
 
 
 def main():
