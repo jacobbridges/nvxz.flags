@@ -17,3 +17,8 @@ class Project(BaseModel):
     name: str
     user_id: int
     domain_whitelist: list[str]
+
+
+class ProjectCreate(BaseModel):
+    name: str
+    domain_whitelist: list[str]

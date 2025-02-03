@@ -3,11 +3,12 @@ import sqlite3
 
 from api.core.db import get_conn
 from api.schemas import Project
+from api.exceptions import ProjectNameTakenError
 
 logger = logging.getLogger("nvxz")
 
 
-async def create_project(user_id: int, name: str, domain_whitelist: list[str]):
+async def create_project(user_id: int, name: str, domain_whitelist: list[str]) -> int:
     whitelist = (
         "" if not domain_whitelist
         else ",".join(domain_whitelist)
@@ -15,14 +16,20 @@ async def create_project(user_id: int, name: str, domain_whitelist: list[str]):
     async with get_conn() as conn:
         await conn.execute("PRAGMA foreign_keys = ON;")
         try:
-            await conn.execute(
-                "INSERT INTO project (name, user_id, domain_whitelist) VALUES (?, ?, ?);",
+            cursor = await conn.cursor()
+            await cursor.execute(
+                "INSERT INTO project (name, user_id, domain_whitelist) VALUES (?, ?, ?) RETURNING id;",
                 (name, user_id, whitelist),
             )
+            row = await cursor.fetchone()
             await conn.commit()
+            (inserted_id,) = row if row else [None]
+            return inserted_id
         except sqlite3.IntegrityError as e:
-            logger.exception("Error while creating new project!")
             await conn.rollback()
+            logger.exception("Error while creating new project!")
+            if "failed: project.user_id, project.name" in e.args[0]:
+                raise ProjectNameTakenError()
             raise
 
 
