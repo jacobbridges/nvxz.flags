@@ -10,3 +10,10 @@ class User(BaseModel):
 class UserCreate(BaseModel):
     username: str
     password: str
+
+
+class Project(BaseModel):
+    id: int
+    name: str
+    user_id: int
+    domain_whitelist: list[str]

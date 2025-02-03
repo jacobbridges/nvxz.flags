@@ -7,7 +7,7 @@
 
 _Rough ideas; semi-serious task list._
 
-- [ ] User registration and login
+- [x] User registration and login
 - [ ] Users create projects.
 - [ ] Users create flags for projects.
-- [ ] Users generated tokens for projects.
+- [ ] Users manage access tokens for projects.

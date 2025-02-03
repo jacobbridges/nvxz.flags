@@ -31,13 +31,35 @@ async def build_session_table(conn):
     await conn.commit()
 
 
+async def build_project_table(conn):
+    """
+    Build/Maintain the project table.
+    """
+    await conn.execute("""
+    CREATE TABLE IF NOT EXISTS project (
+        id INTEGER PRIMARY KEY ASC,
+        name TEXT NOT NULL UNIQUE,
+        user_id INTEGER,
+        domain_whitelist TEXT,
+        FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
+    )
+    """)
+    await conn.commit()
+    await conn.execute("""
+    CREATE UNIQUE INDEX IF NOT EXISTS uniq_projectname ON project (user_id, name COLLATE NOCASE);
+    """)
+    await conn.commit()
+
+
 async def load_db():
     """
     Build/Maintain the database structure.
     """
     async with get_conn() as conn:
+        await conn.execute("PRAGMA foreign_keys = ON;")
         await build_user_table(conn)
         await build_session_table(conn)
+        await build_project_table(conn)
 
 
 def main():
