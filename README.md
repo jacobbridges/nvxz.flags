@@ -15,6 +15,7 @@
 
 - [ ] More doc strings would make the repo much prettier.
 - [ ] Implement domain checking logic when retrieving flags for projects.
-- [ ] Endpoint to update flags. 😅
+- [x] Endpoint to update flags. 😅
 - [ ] Logout endpoint (force invalidate session token).
 - [ ] Tests and Code Coverage badge.
+- [ ] User can create apps and app tokens.
