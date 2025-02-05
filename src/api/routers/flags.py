@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from api import crud, schemas
+from api import crud, schemas, exceptions as exc
 from api.core.auth import get_current_user
 
 router = APIRouter(
@@ -16,6 +16,11 @@ class FlagCreate(BaseModel):
     name: str
     value: bool
     project_id: int
+
+
+class FlagUpdate(BaseModel):
+    name: str | None = None
+    value: bool | None = None
 
 
 @router.post("/")
@@ -51,3 +56,22 @@ async def list_flags(
     -   project_id: Filter flags by project.
     """
     return await crud.list_flags_by_user(current_user.id, project_id=project_id)
+
+
+@router.patch("/{flag_id}")
+async def update_flag(
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    flag_id: int,
+    data: FlagUpdate,
+) -> schemas.Flag:
+    flag = await crud.get_flag(flag_id)
+    project = await crud.get_project(flag.project_id)
+    if project.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Not Found")
+    update_data = data.model_dump(exclude_unset=True)
+    updated_flag = flag.model_copy(update=update_data)
+    try:
+        await crud.update_flag(updated_flag)
+    except exc.FlagNameTakenError:
+        raise HTTPException(status_code=400, detail="Flag already exists")
+    return updated_flag

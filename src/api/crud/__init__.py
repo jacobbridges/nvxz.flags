@@ -18,4 +18,5 @@ from .flags import (
     get_flag,
     list_flags_by_project,
     list_flags_by_user,
+    update_flag,
 )

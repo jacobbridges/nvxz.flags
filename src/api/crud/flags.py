@@ -25,6 +25,20 @@ async def create_flag(project_id: int, name: str, value: bool) -> int:
             raise
 
 
+async def update_flag(flag: schemas.Flag) -> None:
+    async with get_conn() as conn:
+        try:
+            conn.execute(
+                "UPDATE flag SET name = ? AND value = ? WHERE id = ?",
+                (flag.name, flag.value, flag.id),
+            )
+            conn.commit()
+        except sqlite3.IntegrityError as e:
+            await conn.rollback()
+            logger.exception("Error while updating flag")
+            raise FlagNameTakenError()
+
+
 async def get_flag(idx: int) -> schemas.Flag | None:
     async with get_conn() as conn:
         cursor = await conn.execute("SELECT id, name, value, project_id from flag WHERE id = ?;", (idx,))
