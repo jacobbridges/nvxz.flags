@@ -40,5 +40,14 @@ async def create_flag(
 
 
 @router.get("/")
-async def list_flags(current_user: Annotated[schemas.User, Depends(get_current_user)]) -> list[schemas.Flag]:
-    return await crud.list_flags_by_user(current_user.id)
+async def list_flags(
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    project_id: int | None = None,
+) -> list[schemas.Flag]:
+    """
+    Provides a list of flags belonging to the current user.
+
+    Supported query filters:
+    -   project_id: Filter flags by project.
+    """
+    return await crud.list_flags_by_user(current_user.id, project_id=project_id)

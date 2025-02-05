@@ -40,15 +40,19 @@ async def get_flag(idx: int) -> schemas.Flag | None:
         )
 
 
-async def list_flags_by_user(user_id: int) -> list[schemas.Flag]:
+async def list_flags_by_user(user_id: int, **kwargs) -> list[schemas.Flag]:
+    project_id = None
+    if "project_id" in kwargs:
+        project_id = kwargs["project_id"]
     async with get_conn() as conn:
-        cursor = await conn.execute(
+        sql = (
             "SELECT f.id, f.name, f.value, f.project_id FROM flag f "
             "  JOIN project p ON f.project_id = p.id "
             "  JOIN user u on p.user_id = u.id "
-            "WHERE u.id = ?;",
-            (user_id,),
-        )
+            "WHERE u.id = ? {};"
+        ).format("AND f.project_id = ?" if project_id else "")
+        args = (user_id,) if not project_id else (user_id, project_id)
+        cursor = await conn.execute(sql, args,)
         rows = await cursor.fetchall()
         await cursor.close()
         return [

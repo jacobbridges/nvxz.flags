@@ -13,7 +13,6 @@
 
 ## TODO List
 
-- [ ] Add subrouter for tasks to /projects router.
 - [ ] More doc strings would make the repo much prettier.
 - [ ] Implement domain checking logic when retrieving flags for projects.
 - [ ] Endpoint to update flags. 😅
