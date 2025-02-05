@@ -17,3 +17,4 @@
 - [ ] Implement domain checking logic when retrieving flags for projects.
 - [ ] Endpoint to update flags. 😅
 - [ ] Logout endpoint (force invalidate session token).
+- [ ] Tests and Code Coverage badge.
