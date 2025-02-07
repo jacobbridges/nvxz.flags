@@ -38,6 +38,20 @@ async def get_user(username) -> User | None:
         )
 
 
+async def get_user_by_id(user_id: int) -> User | None:
+    async with get_conn() as conn:
+        cursor = await conn.execute("SELECT id, username, hashed_password FROM user WHERE id = ?", (user_id,))
+        row = await cursor.fetchone()
+        await cursor.close()
+        if row is None:
+            return None
+        return User(
+            id=row[0],
+            username=row[1],
+            hashed_password=row[2],
+        )
+
+
 async def get_user_by_session_id(session_id: str) -> User | None:
     async with get_conn() as conn:
         cursor = await conn.execute(
@@ -88,7 +102,7 @@ async def get_user_api_key(idx: int) -> UserApiKey | None:
             "WHERE id = ?",
             (idx,)
         )
-        row = cursor.fetchone()
+        row = await cursor.fetchone()
         if row is None:
             return None
         row_id, user_id, hashed_api_key, is_revoked, created_at = row
@@ -99,3 +113,18 @@ async def get_user_api_key(idx: int) -> UserApiKey | None:
             is_revoked=is_revoked,
             created_at=created_at,
         )
+
+
+async def update_user_api_key(api_key: UserApiKey) -> UserApiKey | None:
+    async with get_conn() as conn:
+        await conn.execute(
+            """
+            UPDATE user_api_key
+            SET hashed_api_key = ?,
+                is_revoked = ?
+            WHERE id = ?;
+            """,
+            (api_key.hashed_api_key, api_key.is_revoked, api_key.id),
+        )
+        await conn.commit()
+        return await get_user_api_key(api_key.id)

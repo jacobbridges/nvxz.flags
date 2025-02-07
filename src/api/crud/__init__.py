@@ -2,7 +2,10 @@ from .users import (
     create_user,
     create_user_api_key,
     get_user,
+    get_user_by_id,
     get_user_by_session_id,
+    get_user_api_key,
+    update_user_api_key,
 )
 from .sessions import (
     delete_session,
