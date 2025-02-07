@@ -25,3 +25,17 @@ class Flag(BaseModel):
     name: str
     value: bool
     project_id: int
+
+
+class UserApiKey(BaseModel):
+    id: int
+    user_id: int
+    hashed_api_key: str
+    is_revoked: bool
+    created_at: str
+
+
+class NewUserApiKey(BaseModel):
+    id: int
+    user_id: int
+    api_key: str

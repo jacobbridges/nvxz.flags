@@ -5,6 +5,7 @@ from uuid import uuid4
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
+from pydantic import BaseModel
 
 from api import schemas
 
@@ -35,3 +36,15 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
+
+
+async def generate_api_key(user: schemas.User) -> schemas.NewUserApiKey:
+    from api import crud  # prevent circular dependency
+    api_key = str(uuid4()) + "-" + user.username[:5]
+    hashed_api_key = ph.hash(api_key)
+    api_key_id = await crud.create_user_api_key(user_id=user.id, hashed_api_key=hashed_api_key)
+    return schemas.NewUserApiKey(
+        id=api_key_id,
+        user_id=user.id,
+        api_key=api_key,
+    )

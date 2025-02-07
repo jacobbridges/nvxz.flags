@@ -75,6 +75,23 @@ async def build_flag_table(conn):
     await conn.commit()
 
 
+async def build_user_api_key_table(conn):
+    """
+    Build/Maintain the user API key table.
+    """
+    await conn.execute("""
+    CREATE TABLE IF NOT EXISTS user_api_key (
+        id INTEGER PRIMARY KEY ASC,
+        hashed_api_key TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        is_revoked BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
+    )
+    """)
+    await conn.commit()
+
+
 async def load_db():
     """
     Build/Maintain the database structure.
@@ -84,6 +101,7 @@ async def load_db():
         await build_session_table(conn)
         await build_project_table(conn)
         await build_flag_table(conn)
+        await build_user_api_key_table(conn)
 
 
 def main():

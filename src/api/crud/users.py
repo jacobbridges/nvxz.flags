@@ -4,7 +4,7 @@ from datetime import datetime
 from api.core.auth import ph
 from api.core.db import get_conn
 from api.core.settings import SESSION_AGE_LIMIT
-from api.schemas import User
+from api.schemas import User, UserApiKey
 from api.exceptions import UsernameTakenError
 
 now = datetime.utcnow
@@ -64,4 +64,38 @@ async def get_user_by_session_id(session_id: str) -> User | None:
             id=row[0],
             username=row[1],
             hashed_password=row[2],
+        )
+
+
+async def create_user_api_key(user_id: int, hashed_api_key: str) -> int | None:
+    async with get_conn() as conn:
+        cursor = await conn.cursor()
+        await cursor.execute(
+            "INSERT INTO user_api_key (hashed_api_key, user_id) VALUES (?, ?) RETURNING id;",
+            (hashed_api_key, user_id),
+        )
+        row = await cursor.fetchone()
+        await conn.commit()
+        (inserted_id,) = row if row else [None]
+        return inserted_id
+
+
+async def get_user_api_key(idx: int) -> UserApiKey | None:
+    async with get_conn() as conn:
+        cursor = await conn.execute(
+            "SELECT id, user_id, hashed_api_key, is_revoked, created_at "
+            "FROM user_api_key "
+            "WHERE id = ?",
+            (idx,)
+        )
+        row = cursor.fetchone()
+        if row is None:
+            return None
+        row_id, user_id, hashed_api_key, is_revoked, created_at = row
+        return UserApiKey(
+            id=row_id,
+            user_id=user_id,
+            hashed_api_key=hashed_api_key,
+            is_revoked=is_revoked,
+            created_at=created_at,
         )

@@ -1,5 +1,6 @@
 from .users import (
     create_user,
+    create_user_api_key,
     get_user,
     get_user_by_session_id,
 )
