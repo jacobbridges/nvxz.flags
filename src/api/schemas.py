@@ -7,6 +7,12 @@ class User(BaseModel):
     hashed_password: str
 
 
+# Does not represent
+class UserDetail(BaseModel):
+    id: int
+    username: str
+
+
 class Project(BaseModel):
     id: int
     name: str

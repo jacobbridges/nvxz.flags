@@ -16,24 +16,19 @@ class UserCreate(BaseModel):
     password: str
 
 
-class UserDetail(BaseModel):
-    id: int
-    username: str
-
-
 @router.get("/{username}")
-async def retrieve_user(username: str) -> UserDetail:
+async def retrieve_user(username: str) -> schemas.UserDetail:
     user = await crud.get_user(username)
     if user is None:
         raise HTTPException(status_code=404, detail="Not Found")
-    return UserDetail(
+    return schemas.UserDetail(
         id=user.id,
         username=user.username,
     )
 
 
 @router.post("/")
-async def create_user(user: UserCreate) -> UserDetail:
+async def create_user(user: UserCreate) -> schemas.UserDetail:
     if DISABLE_USER_CREATE_ENDPOINT:
         raise HTTPException(status_code=403, detail="Disabled")
     try:
@@ -41,7 +36,7 @@ async def create_user(user: UserCreate) -> UserDetail:
     except UsernameTakenError:
         raise HTTPException(status_code=400, detail="That username is taken.")
     user = await crud.get_user(user.username)
-    return UserDetail(
+    return schemas.UserDetail(
         id=user.id,
         username=user.username,
     )

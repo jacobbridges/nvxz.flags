@@ -13,11 +13,9 @@ password_hasher = ph = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
-async def decode_token(token: str) -> schemas.User | None:
-    from api import crud  # prevent circular dependency
+def decode_token(token: str) -> str:
     session_id = base64.b64decode(token).decode("utf-8")
-    user = await crud.get_user_by_session_id(session_id)
-    return user
+    return session_id
 
 
 async def generate_token(user: schemas.User) -> str:
@@ -28,7 +26,8 @@ async def generate_token(user: schemas.User) -> str:
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    user = await decode_token(token)
+    from api import crud  # prevent circular dependency
+    user = await crud.get_user_by_session_id(decode_token(token))
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
