@@ -76,10 +76,8 @@ More detailed API docs are available on swagger at `/docs/` after install.
 
 #### 🔌 Login
 
-_OAuth2 scheme._
-
 <details>
- <summary><code>POST</code> <code><b>/auth/token/</b></code></summary>
+ <summary><code>POST</code> <code><b>/auth/token/</b></code> <code>OAuth2 Schema</code></summary>
 
 ##### Parameters
 
