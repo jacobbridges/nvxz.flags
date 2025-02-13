@@ -98,11 +98,10 @@ More detailed API docs are available on swagger at `/docs/` after install.
 ##### Example cURL
 
 > ```shell
-> curl -X 'POST' \
-  'https://localhost:8000/auth/token' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  -d 'grant_type=password&username=test&password=test'
+> curl -X 'POST' 'https://localhost:8000/auth/token' \
+>  -H 'accept: application/json' \
+>  -H 'Content-Type: application/x-www-form-urlencoded' \
+>  -d 'grant_type=password&username=test&password=test'
 > ```
 
 </details>
